@@ -25,7 +25,7 @@ from .utils import (fraction_threshold,
                     importance_masks_bias,
                     activation_importance)
 
-
+# The MP used in the paper
 class GlobalMagWeight(VisionPruning):
     ''' Does not prune bias '''
     def model_masks(self):
@@ -43,9 +43,9 @@ class GlobalMagBias(VisionPruning):
         threshold = fraction_threshold(flat_importances, self.fraction)
         masks = importance_masks_bias(importances, threshold)
         return masks
+
     
 class FlowMagWeight(VisionPruning):
-
     def model_masks(self):
         importances = map_importances(np.abs, self.params())
         importances = calc_flows(importances)
@@ -74,7 +74,7 @@ class LayerMagWeight(LayerPruning, VisionPruning):
                  for param, value in params.items() if value is not None}
         return masks
 
-
+# The GP used in the paper
 class GlobalMagGrad(GradientMixin, VisionPruning):
 
     def model_masks(self):
@@ -103,6 +103,7 @@ class MixedMagGrad2(GradientMixin, VisionPruning):
         masks = importance_masks(importances, threshold)
         return masks
 
+# The XP used in the Paper
 class MixedMagGrad(GradientMixin, VisionPruning):
 
     def model_masks(self):

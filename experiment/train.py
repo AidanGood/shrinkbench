@@ -159,7 +159,7 @@ class TrainingExperiment(Experiment):
         torch.save({
             'model_state_dict': self.model.state_dict(),
             'optim_state_dict': self.optim.state_dict()
-        }, checkpoint_path / f'checkpoint-{self.round}-{self.strategy}.pt')
+        }, checkpoint_path / f'checkpoint-{self.round}.pt')
         
     def prune_checkpoint(self):
         checkpoint_path = self.path / 'checkpoints'

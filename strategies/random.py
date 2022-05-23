@@ -15,7 +15,7 @@ def random_mask(tensor, fraction):
     mask[idx] = 0.0
     return mask
 
-
+# The RP used in the Paper
 class RandomPruning(VisionPruning):
 
     def model_masks(self):

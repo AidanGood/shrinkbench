@@ -1,4 +1,4 @@
-from .mnist_csv import csv_load, csv_initialize, csv_mnist_finish, csv_class_statistics
+from .mnist_csv import mnist_init, mnist_log
 from .util import view_classify
 from .cifar100 import cifar100_init, cifar100_class, cifar100_log
 from .celebA import celebA_init, celebA_log

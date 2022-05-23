@@ -18,7 +18,7 @@ from ..models import MnistNet, LeNet
 Modified Pruning experiment class to separate pruning and training methods
 
     To Use:
-        run() method to run training epochs
+        run() method to run training/finetuning epochs
         prune() method to prune model
 """
 
@@ -152,14 +152,15 @@ class PruningClass(TrainingExperiment):
             },
             f"{path}/saved_models/{file_name}.pt")
 
-    def load_model(self, file_name=None, checkpoint=False, prune=False):
+    def load_model(self, file_name=None, prune_file=False, checkpoint=False, prune=False):
         """
-        Returns a 
+        Load either a saved model, best trining model, or best finetuned model 
 
         Args:
             file_name: name of a previously saved model file, defaults None
-            checkpoint: Bool used to select the best val_loss non-pruned model after training, defaults False
-            prune: Bool used to select the best val_loss pruned after finetuning, defaults False
+            prune_file: Bool set true when model being loaded was a pruned/finetuned model
+            checkpoint: Bool used to select the best val_acc non-pruned model after training, defaults False
+            prune: Bool used to select the best val_acc pruned after finetuning, defaults False
 
         """
         self.update_optim(self.train_kwargs["optim"], self.train_kwargs["epochs"], self.train_kwargs["lr"])
@@ -172,11 +173,20 @@ class PruningClass(TrainingExperiment):
         if file_name is not None and not checkpoint:
             checkpoint = torch.load(f"{path}/saved_models/{file_name}.pt", map_location=torch.device(device))
         elif checkpoint:
-            checkpoint = torch.load(f"{self.path}/checkpoints/checkpoint-{self.round}-{self.strategy}.pt", map_location=torch.device(device))
+            checkpoint = torch.load(f"{self.path}/checkpoints/checkpoint-{self.round}.pt", map_location=torch.device(device))
         elif prune:
             checkpoint = torch.load(f"{self.path}/checkpoints/checkpoint-{self.compression}-{self.round}-{self.strategy}.pt", map_location=torch.device(device))
 
-        return checkpoint
+        
+    
+        self.build_model(f"{self.model_name}")
+        self.to_device()
+        if prune or prune_file:
+            self.prune()
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.optim.load_state_dict(checkpoint['optim_state_dict'])
+        self.eval()
+
             
 
     def build_qmnist_dataloader(self):
